@@ -23,10 +23,11 @@ entrega(5,rua2,20/05/2021-15:10,20/05/2021-16:10,4,bicicleta,jose,5,5,entregue).
 entrega(6,rua2,20/05/2021-15:10,20/05/2021-16:30,2,carro,manuel,5,6,entregue).
 
 % Cria factos através do conhecimento ja obtido mas desta vez com o preço
-entrega(_,_,_/_/_-H1:M1,_/_/_-H2:M2,_,T,_,_,Id,_,Preco) :- 
-    entrega(_,_,_/_/_-H1:M1,_/_/_-H2:M2,_,T,_,_,Id,_),
+entrega(_,_,D1,D2,_,T,_,_,Id,_,Preco) :- 
+    entrega(_,_,D1,D2,_,T,_,_,Id,_),
     encomenda(Id,Peso,Volume),
-    calculaPrecoHora(T,H1:M1,H2:M2,P),
+    calculateHours(D1,D2,Hours),
+    calculaPrecoHora(T,Hours,P),
     Preco is (Peso*Volume)/10 + P.
 
 

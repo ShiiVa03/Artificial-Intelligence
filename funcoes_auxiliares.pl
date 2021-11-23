@@ -1,15 +1,17 @@
 % Calcula o preco baseado no prazo de entrega
-calculaPrecoHora(T,H1:M1,H2:M2,P) :-
-    H1 =< H2,
-    H is abs(H2 - H1),
-    M is abs(M2 - M1),
+calculaPrecoHora(T,Hours,P) :-
     transporte(N,T,_,_),
-    P is (H*(15/N) + (M*(15/N))/60),!.
-calculaPrecoHora(T,H1:M1,H2:M2,P) :-
-    H is abs((H1-24) - H2),
-    M is abs(M2 - M1),
-    transporte(N,T,_,_),
-    P is (H*(15/N) + (M*(15/N))/60),!.
+    P is ((15/N)/Hours),!.
+
+calculateHours(D/M/A-H:Mi,D1/M1/A1-H1:Mi1,Hours) :- 
+    timediff(date(A,M,D,H,Mi,0,0,-,-), date(A1,M1,D1,H1,Mi1,0,0,-,-),Res),
+    Hours is Res/3600,!.
+
+timediff(DateTime1, DateTime2, Sec) :-
+        date_time_stamp(DateTime1, TimeStamp1),
+        date_time_stamp(DateTime2, TimeStamp2),
+        Sec is abs(TimeStamp2 - TimeStamp1),!.
+
 
 % Metodo para comparar os niveis de transporte
 compare_tuples_descending('<', (_, X), (_, Y)) :- 
