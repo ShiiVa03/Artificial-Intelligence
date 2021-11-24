@@ -49,10 +49,37 @@ estafeta_enc_aux([X|Tail],List,Result,Re) :- estafeta_enc_aux(Tail,List,Result,R
 servidoEstafeta(IdEstafeta, Res) :-
     findall(IdCliente, entrega(_,_,_,_,IdEstafeta,_,IdCliente,_,_,_), Res).
 
+
 % Ex 4
 valor_faturado(D/M/A,Result) :- 
     findall(P,entrega(_,_,D/M/A-_:_,_,_,_,_,_,_,_,P),PriceList),
     sumlist(PriceList,Result).
+
+
+% Ex 5
+zonaComMaisEntregasAux([], Z/N, Z/N).
+zonaComMaisEntregasAux([Z|T], X/N, Res) :-
+    count(T, Z, N1, _),
+    N2 is N1 + 1,
+    N2 >= N,
+    zonaComMaisEntregasAux(T, Z/N2, Res).
+zonaComMaisEntregasAux([H|T], X/N, Res) :-
+    zonaComMaisEntregasAux(T, X/N, Res).
+    
+zonaComMaisEntregas(L, R) :-
+    zonaComMaisEntregasAux(L, _/0, R), !.
+
+findFreguesia(Rua, F) :-
+    freguesia(F, L),
+    member(Rua, L), !.
+
+ruaComMaisEntregas(Result) :-
+    findall(Rua, entrega(_, Rua, _, _, _, _, _, _, _, _), Ruas),
+    zonaComMaisEntregas(Ruas, Result).
+
+freguesiaComMaisEntregas(Result) :-
+    findall(Freguesia, (entrega(_, Rua, _, _, _, _, _, _, _, _), findFreguesia(Rua, Freguesia)), Freguesias),
+    zonaComMaisEntregas(Freguesias, Result).
 
 
 % Ex 6
@@ -81,6 +108,7 @@ get_list_by_trans_aux([X|Tail], Res,R) :-
     append([(X,Total)],Res,L2),
     get_list_by_trans_aux(LWithoutRep,L2,R).
 
+
 % Ex 8
 total_by_est(DataIn, DataFin, Res) :-
     findall(IdEs,(entrega(_,_,D,_,IdEs,_,_,_,_,_),dataEntreDatas(DataIn,D,DataFin)),EstList),
@@ -105,6 +133,7 @@ contarEncomendasEntregues(Data1,Data2,R) :-
 contarEncomendasNaoEntregues(Data1,Data2,R) :-
 	findall(1, (entrega(_,_,X,_,_,_,_,_,_,nao_entregue), dataEntreDatas(Data1,X,Data2)), L),
 	length(L,R).
+
 
 % Ex 10
 getPesoEncomenda(Id,P) :-
