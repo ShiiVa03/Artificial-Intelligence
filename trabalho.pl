@@ -145,7 +145,6 @@ calcularPesoTotal(Estafeta,D/M/A, Resultado) :-
 	findall(X, (entrega(_,_,DataIn,_,IdEstafeta,_,_,_,X,_),dataEntreDatas(D/M/A-00:00,DataIn,D/M/A-23:59)), L),
 	maplist(getPesoEncomenda, L, T),
 	sumlist(T, Resultado).
-<<<<<<< HEAD
 
 % Gera uma encomenda 
 geraEncomenda(X) :-
@@ -162,5 +161,3 @@ geraEncomenda(X) :-
 encomendasAtrasadas(X) :-
     findall(P,estafeta(_,_,P),List),
     sum_list(List,X).
-=======
->>>>>>> c5ba6e131a7d28852bcb90ee65d88f65e4082af5
