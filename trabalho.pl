@@ -1,6 +1,7 @@
 :- style_check(-singleton).
 :- include('database.pl').
 :- include('funcoes_auxiliares.pl').
+:- use_module(library(random)).
 
 
 % Ex 1
@@ -10,7 +11,7 @@ eco(R) :-
     filterList(Head,[Head|TT],Sol),
     countList(Sol,[],Li),
     maxLWrapper(Li,(Res,Re)),
-    estafeta(Re,R),!.
+    estafeta(Re,R,_),!.
 
 maxLWrapper([((Id,T),N)|Tail], R) :- maxL(Tail,(N,Id),R).
 
@@ -40,7 +41,7 @@ estafeta_enc(IdCliente, List, Res) :-
 estafeta_enc_aux([], _, Result,Result).
 estafeta_enc_aux([(IdEnc,IdT)|Tail], List, Result,Re) :- 
     member(IdEnc, List),
-    estafeta(IdT,Nome),
+    estafeta(IdT,Nome,_),
     estafeta_enc_aux(Tail,List, [Nome|Result],Re),!.
 estafeta_enc_aux([X|Tail],List,Result,Re) :- estafeta_enc_aux(Tail,List,Result,Re).
 
@@ -92,14 +93,14 @@ get_list_by_est_aux([],Result,Result).
 get_list_by_est_aux([X|Tail], Res,R) :-
     count(Tail,X,Count,LWithoutRep),
     Total is Count + 1,
-    estafeta(X,Nome),
+    estafeta(X,Nome,_),
     append([(Nome,Total)],Res,L2),
     get_list_by_est_aux(LWithoutRep,L2,R).
 
 
 % Ex 9
 contarEncomendasEntregues(Data1,Data2,R) :-
-	findall(1, (entrega(_,_,X,_,_,_,_,_,_,entregue), dataEntreDatas(Data1,X,Data2)), L),
+	findall(1, (entrega(_,_,X,_,_,_,_,_,_,(entregue,_)), dataEntreDatas(Data1,X,Data2)), L),
 	length(L,R).
 
 contarEncomendasNaoEntregues(Data1,Data2,R) :-
@@ -108,10 +109,26 @@ contarEncomendasNaoEntregues(Data1,Data2,R) :-
 
 % Ex 10
 getPesoEncomenda(Id,P) :-
-	encomenda(Id,P,_).
+	encomenda(Id,P,_,_).
 
 calcularPesoTotal(Estafeta,D/M/A, Resultado) :-
-	estafeta(IdEstafeta, Estafeta),
+	estafeta(IdEstafeta, Estafeta,_),
 	findall(X, (entrega(_,_,DataIn,_,IdEstafeta,_,_,_,X,_),dataEntreDatas(D/M/A-00:00,DataIn,D/M/A-23:59)), L),
 	maplist(getPesoEncomenda, L, T),
 	sumlist(T, Resultado).
+
+% Gera uma encomenda 
+geraEncomenda(X) :-
+    random_between(1,3,Trans),
+    transporte(Trans,_,PesoM,_),
+    random_between(1,PesoM,Peso),
+    random_between(1,50,Volume),
+    geraIdEnc(Id),
+    findEst(IdE),
+    assert(encomenda(Id,Peso,Volume,IdE)).
+
+% Ver quantas entregas foram feitas com atraso
+
+encomendasAtrasadas(X) :-
+    findall(P,estafeta(_,_,P),List),
+    sum_list(List,X).

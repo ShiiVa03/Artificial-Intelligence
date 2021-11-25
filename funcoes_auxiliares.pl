@@ -56,3 +56,29 @@ dataMaiorQueData(D1/M1/A1-H1:MIN1, D2/M2/A2-H2:MIN2) :-
     (A1 =:= A2, M1 =:= M2, D1 =:= D2, H1 =:= H2, MIN1 > MIN2, !).
 
 dataMenorQueData(X, Y) :- not(dataMaiorQueData(X,Y)).
+
+
+maxList(List,Max) :- maxListAux(List,0,Max).
+
+maxListAux([],R,R).
+maxListAux([X|Xs],Max,R) :- X >= Max,maxListAux(Xs,X,R).
+maxListAux([X|Xs],Max,R) :- X < Y, maxListAux(Xs,Max,R).
+
+geraIdEnc(X) :-
+    findall(Y,encomenda(Y,_,_,_),List),
+    maxList(List,Maximo),
+    X is Maximo + 1.
+    
+chooseEstafeta(X,Res) :-
+    estafeta(X,_,P),
+    Prob is 1.0 - (P/10),
+    maybe(Prob),
+    Res = X.
+
+
+findEst(X) :-
+    findall(Id,estafeta(Id,_,_),List),
+    length(List,Len),
+    random_between(1,Len, Est),
+    chooseEstafeta(Est,X).
+findEst(X) :- findEst(X).
