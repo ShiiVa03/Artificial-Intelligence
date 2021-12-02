@@ -140,8 +140,7 @@ contarEncomendasNaoEntregues(Data1,Data2,R) :-
 getPesoEncomenda(Id,P) :-
 	encomenda(Id,P,_,_).
 
-calcularPesoTotal(Estafeta,D/M/A, Resultado) :-
-	estafeta(IdEstafeta, Estafeta,_),
+calcularPesoTotal(IdEstafeta,D/M/A, Resultado) :-
 	findall(X, (entrega(_,_,DataIn,_,IdEstafeta,_,_,_,X,_),dataEntreDatas(D/M/A-00:00,DataIn,D/M/A-23:59)), L),
 	maplist(getPesoEncomenda, L, T),
 	sumlist(T, Resultado).
