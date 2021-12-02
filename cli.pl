@@ -124,8 +124,8 @@ queries_menu :-
 
 query(X) :-
     write('\33\[2J'),
-    write('0. Voltar a trás'), nl,
     query_body(X),
+    write('0. Voltar a trás'), nl,
     read(Z),
     ( Z = 0 -> !, queries_menu; true ),
     fail.
