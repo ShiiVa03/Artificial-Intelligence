@@ -1,12 +1,9 @@
-from street import has_vertex
+from street import Street
 
 class Order:
-    def __init__(self, street: str, weight: int, time: str):
+    def __init__(self, street_name: str, weight: int, time: str):
 
-        if not has_vertex(street):
-            raise StreetDoesntExistException
-
-        self.street = street
+        self.street = Street.get_street_by_name(street_name)
         self.weight = weight
 
         hours, minutes = map(int, time.split(':'))
@@ -19,7 +16,7 @@ class Order:
     def get_weight(self) -> int:
         return self.weight
     
-    def get_street(self) -> str:
+    def get_street(self) -> Street:
         return self.street
     
     def get_time(self) -> int:

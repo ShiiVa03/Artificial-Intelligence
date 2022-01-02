@@ -4,6 +4,9 @@ class AlreadyExistsException(Exception):
 class CourierAlreadyExistsException(AlreadyExistsException):
     pass
 
+class StreetAlreadyExistsException(AlreadyExistsException):
+    pass
+
 class StreetDoesntExistException(Exception):
     pass
 
@@ -15,4 +18,7 @@ class TransportException(Exception):
     pass
 
 class TransportWeightException(TransportException):
+    pass
+
+class ConnectionDistHigherThanEuclidian(Exception):
     pass

@@ -1,4 +1,22 @@
+from __future__ import annotations
 from exceptions import *
+from math import sqrt, ceil
+
+class Point:
+    def __init__(self, x: int, y: int):
+      self.x = x
+      self.y = y
+
+    def get_x(self) -> int:
+      return self.x
+
+    def get_y(self) -> int:
+      return self.y
+    
+    def __repr__(self) -> str:
+        return f"({self.x}, {self.y})"
+
+
 
 vertices_no = 0
 
@@ -42,17 +60,64 @@ def print_graph():
 graph = {}
 
 class Street:
+
+    all_streets = {}
     
-    def __new__(cls, street):
+    def __init__(self, name: str, location: Point):
         '''
             Just to garantee that this street exists in order to avoid future misspellings
         '''
 
-        add_vertex(street)
+        if name in self.__class__.all_streets:
+            raise StreetAlreadyExistsException
 
+        self.name = name
+        self.location = location
+
+        add_vertex(self)
+
+
+        self.__class__.all_streets[name] = self
+
+
+    def get_name(self) -> str:
+        return self.name
+    
+    def get_location(self) -> Point:
+        return self.location
+    
+    def euclidian_dist(self, other_street: Street) -> int:
+        street_location = self.location
+        other_location = other_street.get_location()
+
+        return ceil(sqrt((other_location.get_x() - street_location.get_x()) ** 2 + (other_location.get_y() - street_location.get_y()) ** 2))
 
     @classmethod
-    def connection(cls, street1, street2, distance, both_ways=False):
-        add_edge(street1, street2, distance)
+    def get_street_by_name(cls, name: str) -> Street:
+        try:
+            return cls.all_streets[name]
+        except KeyError:
+            raise StreetDoesntExistException
+
+
+    @staticmethod
+    def connection(street1_name: str, street2_name: str, distance: int=None, both_ways: bool=False):
+        street1 = Street.get_street_by_name(street1_name)
+        street2 = Street.get_street_by_name(street2_name)
+
+        dist = street1.euclidian_dist(street2)
+
+        if (distance is not None):
+            if (distance < dist):
+                raise ConnectionDistHigherThanEuclidian
+            
+            dist = distance
+
+
+        add_edge(street1, street2, dist)
         if (both_ways):
-            add_edge(street2, street1, distance)
+            add_edge(street2, street1, dist)
+    
+
+    def __repr__(self) -> str:
+        return self.name

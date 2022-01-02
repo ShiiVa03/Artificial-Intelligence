@@ -1,13 +1,14 @@
 from order import Order
 from transport import *
 from courier import *
-from algorithms import *
+from uninformed_search_algorithms import *
+from informed_search_algorithms import *
 from typing import List, Tuple, Set, Callable
 from queue import Queue
 from collections import defaultdict
 
 class OrdersCircuit:
-    def __init__(self, initial, orders: List[Order]):
+    def __init__(self, initial: Street, orders: List[Order]):
         self.initial = initial
         self.orders = defaultdict(list)
         self.path = None
@@ -15,7 +16,7 @@ class OrdersCircuit:
         for order in orders:
             self.orders[order.get_street()].append(order)
 
-    def generate_circuit(self, algorithm: Callable[[str, Set[str], str], List[Tuple[str, int]]]) -> List[Tuple[str, int]]:
+    def generate_circuit(self, algorithm: Callable[[Street, Set[Street], Street], List[Tuple[Street, int]]]) -> List[Tuple[Street, int]]:
         courier_name = Courier.book_courier()
         print(courier_name)
 
@@ -25,14 +26,20 @@ class OrdersCircuit:
 
         return self.path
 
-    def generate_circuit_dfs(self) -> List[Tuple[str, int]]:
+    def generate_circuit_dfs(self) -> List[Tuple[Street, int]]:
         return self.generate_circuit(dfs)
     
-    def generate_circuit_bfs(self) -> List[Tuple[str, int]]:
+    def generate_circuit_bfs(self) -> List[Tuple[Street, int]]:
         return self.generate_circuit(bfs)
     
-    def generate_circuit_iter_dfs(self) -> List[Tuple[str, int]]:
+    def generate_circuit_iter_dfs(self) -> List[Tuple[Street, int]]:
         return self.generate_circuit(iter_dfs)
+    
+    def generate_circuit_greedy(self) -> List[Tuple[Street, int]]:
+        return self.generate_circuit(greedy)
+    
+    def generate_circuit_a_star(self) -> List[Tuple[Street, int]]:
+        return self.generate_circuit(a_star)
 
     
     def can_transport(self, transport: Transport) -> bool:
