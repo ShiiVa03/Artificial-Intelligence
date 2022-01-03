@@ -128,11 +128,10 @@ class OrdersCircuit:
             raise NoPossibleCircuit()
 
 
-    def run_fastest(self) -> Optional[Tuple[List[Tuple[Street, int]], Transport]]:
+    def run_fastest(self) -> Optional[Tuple[List[Tuple[Street, int]], Transport, Courier]]:
         if self.courier is not None:
             raise CircuitAlreadyInProgress
         
-        self.courier = Courier.book_courier()
         best_path_transport = None
                     
         for (path, transports) in self.path_transports_per_algorithm.values():
@@ -153,16 +152,17 @@ class OrdersCircuit:
         if best_path_transport is None:
             return None
         
+        self.courier = courier = Courier.book_courier()
+        
         (path,transport) = best_path_transport
-        return (next(zip(*path)), transport)
+        return (next(zip(*path)), transport, courier)
 
 
     
-    def run_ecologic(self) -> Optional[Tuple[List[Tuple[Street, int]], Transport]]:
+    def run_ecologic(self) -> Optional[Tuple[List[Tuple[Street, int]], Transport, Courier]]:
         if self.courier is not None:
             raise CircuitAlreadyInProgress
         
-        self.courier = Courier.book_courier()
         best_path_transport = None
                     
         for (path, transports) in self.path_transports_per_algorithm.values():
@@ -183,8 +183,10 @@ class OrdersCircuit:
         if best_path_transport is None:
             return None
         
+        self.courier = courier = Courier.book_courier()
+        
         (path,transport) = best_path_transport
-        return (next(zip(*path)), transport)
+        return (next(zip(*path)), transport, courier)
 
 
     def finish(self, on_time: bool=True):
