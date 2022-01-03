@@ -1,54 +1,14 @@
 from street import *
 from order import *
-from typing import Set, List, Tuple, Callable
+from typing import Set, List, Tuple, Callable, Optional
 from bisect import insort_right
 from collections import deque
 
-'''
-def greedy(initial: Street, streets: Set[Street], end: Street):
-    path = greedy_aux(initial, streets, end, set())
-
-    if path is not None:
-        path.insert(0, (initial, 0))
-    
-    return path
 
 
-def greedy_aux(initial: Street, streets: Set[Street], end: Street, history: Set[Street]) -> List[Street]:
-    if initial in history:
-        return None
+def greedy(initial: Street, streets: Set[Street], end: Street) -> Optional[List[Tuple[Street, int]]]:
 
-    streets_copy = streets
-
-    history.add(initial)
-
-    if streets:
-        if initial in streets:
-            streets_copy = streets.copy()
-            streets_copy.remove(initial)
-            history = {initial}
-    
-    elif initial == end:
-        return []
-
-    adjs_dist = sorted(((adj, adj[0].euclidian_dist(initial)) for adj in graph[initial]), key=lambda x: x[1])
-    
-    for (adj, _) in adjs_dist:
-
-        path = greedy_aux(adj[0], streets_copy, end, history)
-
-        if path is not None:
-            path.insert(0, adj)
-            return path
-
-    history.discard(initial)
-    return None
-
-'''
-
-def greedy(initial: Street, streets: Set[Street], end: Street) -> List[Street]:
-
-    def heuristic(node: Tuple[List[Tuple[Street, int]], int], adj: Tuple[Street, int]) -> int:
+    def function(node: Tuple[List[Tuple[Street, int]], int], adj: Tuple[Street, int]) -> int:
         path = node[0]
         adj_street = adj[0]
 
@@ -59,12 +19,12 @@ def greedy(initial: Street, streets: Set[Street], end: Street) -> List[Street]:
         else:
             return adj_street.euclidian_dist(end)
     
-    return algorithm(initial, streets, end, heuristic)
+    return informed_search_algorithm(initial, streets, end, function)
 
 
-def a_star(initial: Street, streets: Set[Street], end: Street) -> List[Street]:
+def a_star(initial: Street, streets: Set[Street], end: Street) -> Optional[List[Tuple[Street, int]]]:
 
-    def heuristic(node: Tuple[List[Tuple[Street, int]], int], adj: Tuple[Street, int]) -> int:
+    def function(node: Tuple[List[Tuple[Street, int]], int], adj: Tuple[Street, int]) -> int:
         path = node[0]
         adj_street = adj[0]
 
@@ -76,17 +36,17 @@ def a_star(initial: Street, streets: Set[Street], end: Street) -> List[Street]:
         else:
             return path_cost + adj_street.euclidian_dist(end)
     
-    return algorithm(initial, streets, end, heuristic)
+    return informed_search_algorithm(initial, streets, end, function)
     
 
 
-def algorithm(initial: Street, streets: Set[Street], end: Street, heuristic: Callable[[Tuple[List[Tuple[Street, int]], int], Tuple[Street, int]], int]) -> List[Street]:
+def informed_search_algorithm(initial: Street, streets: Set[Street], end: Street, function: Callable[[Tuple[List[Tuple[Street, int]], int], Tuple[Street, int]], int]) -> Optional[List[Tuple[Street, int]]]:
 
     if not streets:
         return []
     
-    queue = deque([([(initial, 0)], 0)]) # queue is a List[(Path, heuristic_result)] where Path is [(Street, cost)]
-                                         # First node there is no need to execute heuristic
+    queue = deque([([(initial, 0)], 0)]) # queue is a List[(Path, function_result)] where Path is [(Street, cost)]
+                                         # First node there is no need to execute function
     
     while len(queue) > 0:
         node = queue.popleft()
@@ -114,8 +74,8 @@ def algorithm(initial: Street, streets: Set[Street], end: Street, heuristic: Cal
                     break
 
             if not in_cycle:
-                heuristic_result = heuristic(node, adj)
-                insort_right(queue, (path + [adj], heuristic_result), key=lambda x: x[1])
+                function_result = function(node, adj)
+                insort_right(queue, (path + [adj], function_result), key=lambda x: x[1])
 
     return None
 

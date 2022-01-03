@@ -1,9 +1,9 @@
 from street import *
 from order import *
-from typing import Set, List
+from typing import Set, List, Optional, Tuple
 from collections import deque
 
-def dfs(initial: Street, streets: Set[Street], end) -> List[Street]:
+def dfs(initial: Street, streets: Set[Street], end) -> Optional[List[Tuple[Street, int]]]:
     (path, _) = dfs_aux(initial, streets, end, set())
 
     if path is not None:
@@ -11,7 +11,7 @@ def dfs(initial: Street, streets: Set[Street], end) -> List[Street]:
 
     return path
 
-def dfs_aux(initial: Street, streets: Set[Order], end: Street, history: Set[Street], max_depth: int=None, depth: int=0) -> List[Street]:
+def dfs_aux(initial: Street, streets: Set[Street], end: Street, history: Set[Street], max_depth: int=None, depth: int=0) -> Tuple[Optional[List[Tuple[Street, int]]], int]:
 
     if initial in history:
         return (None, 1)
@@ -51,7 +51,7 @@ def dfs_aux(initial: Street, streets: Set[Order], end: Street, history: Set[Stre
 
 
 
-def bfs(initial: Street, streets: Set[Street], end: Street) -> List[Street]:
+def bfs(initial: Street, streets: Set[Street], end: Street) -> Optional[List[Tuple[Street, int]]]:
     
     if not streets:
         return []
@@ -89,7 +89,7 @@ def bfs(initial: Street, streets: Set[Street], end: Street) -> List[Street]:
 
 
 
-def iter_dfs(initial: Street, streets: Set[Street], end: Street) -> List[Street]:
+def iter_dfs(initial: Street, streets: Set[Street], end: Street) -> Optional[List[Tuple[Street, int]]]:
     max_depth = max_depth_reached = 1
     path = None
 

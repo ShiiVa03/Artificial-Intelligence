@@ -1,6 +1,7 @@
 from __future__ import annotations
 from exceptions import *
 from math import sqrt, ceil
+from typing import Dict, List, Tuple
 
 class Point:
     def __init__(self, x: int, y: int):
@@ -18,58 +19,47 @@ class Point:
 
 
 
-vertices_no = 0
-
-def has_vertex(v):
+def add_vertex(v: Street):
     global graph
-    return v in graph
 
-# Add a vertex to the dictionary
-def add_vertex(v):
-  global graph
-  global vertices_no
-  if v in graph:
-    print("Vertex ", v, " already exists.")
-  else:
-    vertices_no = vertices_no + 1
+    if v in graph:
+      raise StreetAlreadyExistsException
+
     graph[v] = []
 
-# Add an edge between vertex v1 and v2 with edge weight e
-def add_edge(v1, v2, e):
-  global graph
-  # Check if vertex v1 is a valid vertex
-  if v1 not in graph:
-    raise StreetDoesntExistException
-  # Check if vertex v2 is a valid vertex
-  elif v2 not in graph:
-    raise StreetDoesntExistException
-  else:
+
+def add_edge(v1: Street, v2: Street, e: int):
+    global graph
+
+    if v1 not in graph:
+        raise StreetDoesntExistException
+
+    elif v2 not in graph:
+        raise StreetDoesntExistException
+    else:
     # Since this code is not restricted to a directed or 
     # an undirected graph, an edge between v1 v2 does not
     # imply that an edge exists between v2 and v1
-    temp = (v2, e)
-    graph[v1].append(temp)
+        temp = (v2, e)
+        graph[v1].append(temp)
 
 # Print the graph
 def print_graph():
-  global graph
-  for vertex in graph:
-    for edges in graph[vertex]:
-      print(vertex, " -> ", edges[0], " edge weight: ", edges[1])
+    global graph
+    for vertex in graph:
+        for edges in graph[vertex]:
+            print(vertex, " -> ", edges[0], " edge weight: ", edges[1])
 
-graph = {}
+graph = {} # type: Dict[Street, List[Tuple[Street, int]]]
 
 class Street:
 
-    all_streets = {}
+    _all_streets = {} # type: Dict[str, Street]
     
     def __init__(self, name: str, location: Point):
         '''
             Just to garantee that this street exists in order to avoid future misspellings
         '''
-
-        if name in self.__class__.all_streets:
-            raise StreetAlreadyExistsException
 
         self.name = name
         self.location = location
@@ -77,7 +67,7 @@ class Street:
         add_vertex(self)
 
 
-        self.__class__.all_streets[name] = self
+        self.__class__._all_streets[name] = self
 
 
     def get_name(self) -> str:
@@ -95,7 +85,7 @@ class Street:
     @classmethod
     def get_street_by_name(cls, name: str) -> Street:
         try:
-            return cls.all_streets[name]
+            return cls._all_streets[name]
         except KeyError:
             raise StreetDoesntExistException
 
