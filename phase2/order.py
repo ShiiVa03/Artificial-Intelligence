@@ -26,6 +26,9 @@ class Order:
     
     def get_time(self) -> int:
         return self.time
+    
+    def __repr__(self) -> str:
+        return f"{self.street} (W:{self.weight}, V:{self.volume}, T:{self.time})"
 
 
 

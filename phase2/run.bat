@@ -1,0 +1,1 @@
+(cls && python3.10 -i main.py) || (cls && python3 -i main.py) || (cls && python -i main.py)

@@ -42,9 +42,6 @@ def a_star(initial: Street, streets: Set[Street], end: Street) -> Optional[List[
 
 def informed_search_algorithm(initial: Street, streets: Set[Street], end: Street, function: Callable[[Tuple[List[Tuple[Street, int]], int], Tuple[Street, int]], int]) -> Optional[List[Tuple[Street, int]]]:
 
-    if not streets:
-        return []
-    
     queue = deque([([(initial, 0)], 0)]) # queue is a List[(Path, function_result)] where Path is [(Street, cost)]
                                          # First node there is no need to execute function
     
@@ -59,19 +56,22 @@ def informed_search_algorithm(initial: Street, streets: Set[Street], end: Street
             if not missing_streets:
                 return path
 
-        rev_streets_gen = map(lambda x: x[0], reversed(path))
+        streets_copy = streets.copy()
+        last_order_idx = -1
+        for (idx, (street, _)) in enumerate(path):
+            try:
+                streets_copy.remove(street)
+            except KeyError:
+                if not streets_copy:
+                    break
+            else:
+                last_order_idx = idx
+
+        visited_streets_after_last_order = set(x[0] for x in path[last_order_idx:])
 
         for adj in graph[last_street]:
 
-            in_cycle = False
-            adj_street = adj[0]
-
-            for street in rev_streets_gen:
-                if street in streets:
-                    break
-                if street == adj_street:
-                    in_cycle = True
-                    break
+            in_cycle = adj[0] in visited_streets_after_last_order
 
             if not in_cycle:
                 function_result = function(node, adj)

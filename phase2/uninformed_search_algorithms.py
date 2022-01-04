@@ -19,12 +19,13 @@ def dfs_aux(initial: Street, streets: Set[Street], end: Street, history: Set[Str
     streets_copy = streets
     
     history.add(initial)
+    new_history = None
 
     if streets:
         if initial in streets:
             streets_copy = streets.copy()
             streets_copy.remove(initial)
-            history = {initial}
+            new_history = {initial}
     
     elif initial == end:
         return ([], 1)
@@ -36,7 +37,7 @@ def dfs_aux(initial: Street, streets: Set[Street], end: Street, history: Set[Str
     if max_depth is None or depth < max_depth:
         for adj in graph[initial]:
 
-            (path, depth_reached) = dfs_aux(adj[0], streets_copy, end, history, max_depth, depth + 1)
+            (path, depth_reached) = dfs_aux(adj[0], streets_copy, end, new_history or history, max_depth, depth + 1)
 
             if depth_reached > max_depth_reached:
                 max_depth_reached = depth_reached
@@ -45,6 +46,7 @@ def dfs_aux(initial: Street, streets: Set[Street], end: Street, history: Set[Str
                 path.insert(0, adj)
                 return (path, max_depth_reached + 1)
 
+
     history.discard(initial)
     return (None, max_depth_reached + 1)
 
@@ -52,9 +54,6 @@ def dfs_aux(initial: Street, streets: Set[Street], end: Street, history: Set[Str
 
 
 def bfs(initial: Street, streets: Set[Street], end: Street) -> Optional[List[Tuple[Street, int]]]:
-    
-    if not streets:
-        return []
     
     queue = deque([[(initial, 0)]]) # queue is a List[Path] where Path is [(Street, distance)]
     
@@ -68,19 +67,22 @@ def bfs(initial: Street, streets: Set[Street], end: Street) -> Optional[List[Tup
             if not missing_streets:
                 return path
 
-        rev_streets_gen = map(lambda x: x[0], reversed(path))
+        streets_copy = streets.copy()
+        last_order_idx = -1
+        for (idx, (street, _)) in enumerate(path):
+            try:
+                streets_copy.remove(street)
+            except KeyError:
+                if not streets_copy:
+                    break
+            else:
+                last_order_idx = idx
+
+        visited_streets_after_last_order = set(x[0] for x in path[last_order_idx + 1:])
 
         for adj in graph[last_street]:
 
-            in_cycle = False
-            adj_street = adj[0]
-
-            for street in rev_streets_gen:
-                if street in streets:
-                    break
-                if street == adj_street:
-                    in_cycle = True
-                    break
+            in_cycle = adj[0] in visited_streets_after_last_order
 
             if not in_cycle:
                 queue.append(path + [adj])
@@ -96,6 +98,7 @@ def iter_dfs(initial: Street, streets: Set[Street], end: Street) -> Optional[Lis
     while (path is None and max_depth == max_depth_reached):
         (path, max_depth_reached) = dfs_aux(initial, streets, end, set(), max_depth)
         max_depth += 1
+        
     
     
     if path is not None:

@@ -5,14 +5,13 @@ from courier import *
 from uninformed_search_algorithms import *
 from informed_search_algorithms import *
 from typing import List, Tuple, Set, Callable, Optional
-from queue import Queue
 from collections import defaultdict
 
 class OrdersCircuit:
 
     _all_circuits = [] # type: List[OrdersCircuit]
 
-    def __init__(self, initial: Street, orders: List[Order]):
+    def __init__(self, name: str, initial: Street, orders: List[Order]):
 
         self.path_transports_per_algorithm = {
             'dfs': (None, None),
@@ -22,6 +21,7 @@ class OrdersCircuit:
             'a_star': (None, None)
         }
 
+        self.name = name
         self.initial = initial
         self.orders = orders
         self.orders_streets = defaultdict(list)
@@ -233,8 +233,10 @@ class OrdersCircuit:
 
 
     
-    def __repr__(self) -> str:
-        result = []
+    
+    
+    def get_info(self) -> str:
+        result = [f"\n\n\n\n<-- {self.name} -->\n"]
 
         for (algorithm, path_transports) in self.path_transports_per_algorithm.items():
             result.append("\nAlgorithm: " + algorithm.capitalize())
@@ -254,7 +256,11 @@ class OrdersCircuit:
                     result.append(f"\nDistance: {transports[0].get_travelled_distance()} m") # No need to calculate distance
                     result.append("\nTransports:\n")
                     for transport in transports:
-                        result.append(f"\t-{transport}\t{{Time: {transport.get_time()}}}\n")
+                        result.append(f"\t-{transport}\t{{Time: {transport.get_time()} min}}\n")
                     result.append("\n")
 
         return "".join(result)
+    
+
+    def __repr__(self) -> str:
+        return f"Name: {self.name}\nStation: {self.initial}\nOrders: {self.orders}"
