@@ -195,7 +195,9 @@ class OrdersCircuit:
 
         if on_time:
             self.courier.add_penalty()
+
         self.courier.finish()
+        self.courier = None
     
 
     @classmethod
@@ -263,4 +265,4 @@ class OrdersCircuit:
     
 
     def __repr__(self) -> str:
-        return f"Name: {self.name}\nStation: {self.initial}\nOrders: {self.orders}"
+        return f"{{\nName: {self.name}\nStation: {self.initial}\nOrders: {self.orders}\n}}"
