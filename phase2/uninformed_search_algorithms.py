@@ -68,7 +68,7 @@ def bfs(initial: Street, streets: Set[Street], end: Street) -> Optional[List[Tup
                 return path
 
         streets_copy = streets.copy()
-        last_order_idx = -1
+        last_order_idx = 0
         for (idx, (street, _)) in enumerate(path):
             try:
                 streets_copy.remove(street)
@@ -78,7 +78,7 @@ def bfs(initial: Street, streets: Set[Street], end: Street) -> Optional[List[Tup
             else:
                 last_order_idx = idx
 
-        visited_streets_after_last_order = set(x[0] for x in path[last_order_idx + 1:])
+        visited_streets_after_last_order = set(x[0] for x in path[last_order_idx:])
 
         for adj in graph[last_street]:
 
