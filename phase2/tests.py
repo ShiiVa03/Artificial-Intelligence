@@ -4,7 +4,7 @@ from street import *
 
 from memory_profiler import memory_usage
 from time import perf_counter
-from random import triangular, choice
+from random import triangular, choice, shuffle
 from networkx.generators.harary_graph import hnm_harary_graph
 
 ALGORITHMS = {
@@ -44,6 +44,7 @@ for i in g.nodes:
 
 station = all_streets[0]
 edges = list(g.edges)
+shuffle(edges)
 
 for i in range(NUMBER_OF_STREETS):
     con = edges[i]
