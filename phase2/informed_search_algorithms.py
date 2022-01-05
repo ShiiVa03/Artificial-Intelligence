@@ -57,7 +57,7 @@ def informed_search_algorithm(initial: Street, streets: Set[Street], end: Street
                 return path
 
         streets_copy = streets.copy()
-        last_order_idx = -1
+        last_order_idx = 0
         for (idx, (street, _)) in enumerate(path):
             try:
                 streets_copy.remove(street)

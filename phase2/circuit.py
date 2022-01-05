@@ -46,9 +46,9 @@ class OrdersCircuit:
 
     def _generate_circuit_algorithm(self, algorithm: Callable[[Street, Set[Street], Street], Optional[List[Tuple[Street, int]]]]) -> Optional[List[Tuple[Street, int]]]:
 
-        streets_names = set(self.orders_streets.keys())
+        streets = set(self.orders_streets.keys())
 
-        return algorithm(self.initial, streets_names, self.initial)
+        return algorithm(self.initial, streets, self.initial)
 
     def generate_circuit_dfs(self) -> Optional[List[Tuple[Street, int]]]:
         return self._generate_circuit_algorithm(dfs)
@@ -125,7 +125,7 @@ class OrdersCircuit:
                 self.path_transports_per_algorithm[algorithm] = (path, transports)
             
         if not one_possible_circuit:
-            raise NoPossibleCircuit()
+            raise NoPossibleCircuit
 
 
     def run_fastest(self) -> Optional[Tuple[List[Tuple[Street, int]], Transport, Courier]]:
