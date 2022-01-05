@@ -5,7 +5,7 @@ from street import *
 from memory_profiler import memory_usage
 from time import perf_counter
 from random import triangular, choice
-
+from networkx.generators.harary_graph import hnm_harary_graph
 
 ALGORITHMS = {
     'dfs': dfs,
@@ -15,39 +15,39 @@ ALGORITHMS = {
     'a_star': a_star
 }
 
-NUMBER_OF_STREETS = 10
+NUMBER_OF_STREETS = 40
 
-NUMBER_OF_CONNECTIONS = 25
+NUMBER_OF_CONNECTIONS = 60
 
-NUMBER_OF_ORDERS = 5
+NUMBER_OF_ORDERS = 10
 
-NUMBER_OF_CIRCUITS = 5
+NUMBER_OF_CIRCUITS = 1
+'''
+NetworkX h.hnm_harary_graph already checks this
+
 
 if NUMBER_OF_CONNECTIONS < NUMBER_OF_STREETS:
     raise Exception("Number of Connections must be higher than number of Streets for good tests")
 
 if NUMBER_OF_CONNECTIONS > ((NUMBER_OF_STREETS * (NUMBER_OF_STREETS - 1)) // 2):
     raise Exception("Number of Connections exceeds limit")
+'''
 
+g = hnm_harary_graph(NUMBER_OF_STREETS, NUMBER_OF_CONNECTIONS)
 
 all_streets = []
 
-for i in range(NUMBER_OF_STREETS):
+for i in g.nodes:
     street = Street("Street" + str(i), Point(int(triangular(0, 2500, 5000)), int(triangular(0, 2500, 5000)))) # Make streets near the middle point as it happens in real cities
     all_streets.append(street)
 
 
 station = all_streets[0]
-
-
-number_of_connection_per_street = int(NUMBER_OF_CONNECTIONS / NUMBER_OF_STREETS)
-rest_connections = NUMBER_OF_CONNECTIONS % NUMBER_OF_STREETS
+edges = list(g.edges)
 
 for i in range(NUMBER_OF_STREETS):
-    first_street = "Street" + str(i)
-    for j in range(i + 1, i + number_of_connection_per_street + 1):
-        Street.connection(first_street, "Street" + str(j % NUMBER_OF_STREETS), both_ways=True) # both_ways is True to avoid invalid paths
-
+    con = edges[i]
+    Street.connection("Street" + str(con[0]), "Street" + str(con[1]), both_ways=True) # both_ways is True to avoid invalid paths
 
 
 
@@ -57,6 +57,7 @@ for i in range(NUMBER_OF_CIRCUITS):
     streets = set(choice(all_streets) for _ in range(NUMBER_OF_ORDERS))
 
     for (algorithm_name, algorithm) in ALGORITHMS.items():
+        print(algorithm_name)
 
         '''
             Memory performance test
